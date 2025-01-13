@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--preds_threshold", type=float, default=0.5)
     parser.add_argument("--output_width", type=int, default=1280)
     parser.add_argument("--output_height", type=int, default=720)
-    parser.add_argument("--model_verbose", type=bool, default=False)
+    parser.add_argument("--model_verbose", action='store_true')
     parser.add_argument("--model_name", type=str, default="yolov8n.pt")
     parser.add_argument("--codec_name", type=str, default="mp4v")
 
@@ -80,7 +80,6 @@ def main():
     nb_detected_object = 0
     preds_frames_list = list()
     skip_frames_preds = round(output_video_fps / nb_preds_per_sec)
-    model_verbose = False
 
     # initialize the input video capture and get metadata
     if PATH.joinpath(input_filename).exists():
