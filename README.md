@@ -15,7 +15,7 @@ Après avoir activé l'environnement virtuel et installé les librairies, le scr
 `python3 video_processing.py`
 
 Le script "video_processing.py" prend les arguments du tableau ci-dessous en entrée et génère en sortie:
-- un fichier vidéo sur lequel est appliqué le modèle de détection d'objets [YOLO](https://arxiv.org/pdf/1506.02640)
+- un fichier vidéo avec les résultats de la détection d'objets à partir du modèle [YOLO](https://arxiv.org/pdf/1506.02640)
 - un dossier "results" contenant un échantillon des prédictions du modèle
 - un fichier log
 

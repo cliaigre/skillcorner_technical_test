@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--output_results_directory", type=str, default="results/")
     parser.add_argument("--nb_skipped_frames_logs", type=int, default=10)
     parser.add_argument("--nb_preds_per_sec", type=int, default=10)
-    parser.add_argument("--output_fps", type=int, default=30)
+    parser.add_argument("--output_fps", type=int, default=25)
     parser.add_argument("--results_saved_threshold", type=int, default=10)
     parser.add_argument("--preds_threshold", type=float, default=0.5)
     parser.add_argument("--output_width", type=int, default=1280)
@@ -78,8 +78,8 @@ def main():
     first_frame = 0
     frame_count = 0
     nb_detected_object = 0
+    frame_duration = 0
     preds_frames_list = list()
-    skip_frames_preds = round(output_video_fps / nb_preds_per_sec)
 
     # initialize the input video capture and get metadata
     if PATH.joinpath(input_filename).exists():
@@ -95,7 +95,7 @@ def main():
         )
         d = {"execution time": None, "first frame": None, "last frame": None}
         logger.info(
-            f"video input metadata - resolution: {input_video_width}x{input_video_height} - duration: {input_video_duration} sec - nb frames: {input_video_nb_frames} - fps: {input_video_fps} - codec name: {input_video_fourcc_converted}",
+            f"video input metadata - resolution (width x height): {input_video_width}x{input_video_height} - duration: {input_video_duration} sec - nb frames: {input_video_nb_frames} - fps: {input_video_fps} - codec name: {input_video_fourcc_converted}",
             extra=d,
         )
     else:
@@ -141,6 +141,7 @@ def main():
             break
 
         frame_count += 1
+        frame_duration += 1 / input_video_fps
 
         # stop the video processing if a frame is not BRG or RGB
         if len(frame.shape) < 3:
@@ -149,18 +150,22 @@ def main():
                 "first frame": first_frame,
                 "last frame": frame_count,
             }
-            logger.error("the frame is not in colors RGB")
+            logger.error("the frame is not in colors")
             break
 
         # start the objects detection
-        if frame_count % skip_frames_preds == 0:
+        if frame_duration >= 1 / nb_preds_per_sec:
             results = model(frame, conf=preds_threshold, verbose=model_verbose)
             for result in results:
                 frame = result.plot()
                 if result.boxes:
                     nb_detected_object += int(result.boxes.cls.shape[0])
-                    frame_dict = {"frame": frame_count, "image": frame}
+                    frame_dict = {"frame": frame_count, "image": cv2.resize(
+                        frame, (resized_width, resized_height), interpolation=cv2.INTER_AREA
+                        )}
                     preds_frames_list.append(frame_dict)
+            frame_duration -= 1 / nb_preds_per_sec
+            frame_duration = round(frame_duration, 2)
 
         # resize the frame
         resized_frame = cv2.resize(
@@ -223,7 +228,7 @@ def main():
     )
     d = {"execution time": None, "first frame": None, "last frame": None}
     logger.info(
-        f"video output metadata - resolution: {output_video_width}x{output_video_height} - duration: {output_video_duration} sec - nb frames: {output_video_nb_frames} - fps: {output_video_fps} - codec name: {output_video_fourcc_converted}",
+        f"video output metadata - resolution (width x height): {output_video_width}x{output_video_height} - duration: {output_video_duration} sec - nb frames: {output_video_nb_frames} - fps: {output_video_fps} - codec name: {output_video_fourcc_converted}",
         extra=d,
     )
 
