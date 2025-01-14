@@ -28,7 +28,7 @@ Le script "video_processing.py" prend les arguments du tableau ci-dessous en ent
 | output_results_directory | `str` | results/ | nom du dossier contenant les prédictions du modèle | 
 | nb_skipped_frames_logs | `int` | 10 | nombre d'images entre chaque log | 
 | nb_preds_per_sec | `int` | 10 | nombre de prédictions par seconde | 
-| output_fps | `int` | 30 | nombre d'images par sec | 
+| output_fps | `int` | 25 | nombre d'images par sec | 
 | results_saved_threshold | `int` | 10 | nombre d'images des prédictions du modèle en sortie | 
 | preds_threshold | `float` | 0.5 | seuil de détection des prédictions | 
 | output_width | `int` | 1280 | largeur de la vidéo en sortie | 
